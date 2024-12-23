@@ -1,0 +1,15 @@
+subgraphs:
+  users:
+    routing_url: http://user-service:5000/graphql
+    schema:
+      subgraph_url: http://user-service:5000/graphql
+
+  parks:
+    routing_url: http://park-service:5000/graphql
+    schema:
+      subgraph_url: http://park-service:5000/graphql
+  
+  hikes:
+    routing_url: http://hike-service:5000/graphql
+    schema:
+      subgraph_url: http://hike-service:5000/graphql

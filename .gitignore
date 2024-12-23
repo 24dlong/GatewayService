@@ -11,3 +11,7 @@
 
 #!.yarn/cache
 .pnp.*
+
+.vscode/
+.idea/
+.DS_Store

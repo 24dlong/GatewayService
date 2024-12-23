@@ -1,0 +1,97 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION)
+{
+  query: Query
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+"""The `DateTime` scalar represents an ISO-8601 compliant date time type."""
+scalar DateTime
+  @join__type(graph: HIKES)
+  @specifiedBy(url: "https://www.graphql-scalars.com/date-time")
+
+type Hike
+  @join__type(graph: HIKES, key: "id")
+{
+  user: User!
+  trail: Trail!
+  id: ID!
+  length: Float!
+  date: DateTime!
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  HIKES @join__graph(name: "hikes", url: "http://hike-service:5000/graphql")
+  PARKS @join__graph(name: "parks", url: "http://park-service:5000/graphql")
+  USERS @join__graph(name: "users", url: "http://user-service:5000/graphql")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type Park
+  @join__type(graph: PARKS, key: "id")
+{
+  id: ID!
+  name: String!
+}
+
+type Query
+  @join__type(graph: HIKES)
+  @join__type(graph: PARKS)
+  @join__type(graph: USERS)
+{
+  hike(id: Int!): Hike! @join__field(graph: HIKES)
+  hikes(userId: Int): [Hike!]! @join__field(graph: HIKES)
+  park(id: Int!): Park! @join__field(graph: PARKS)
+  parks: [Park!]! @join__field(graph: PARKS)
+  trail(id: Int!): Trail! @join__field(graph: PARKS)
+  trails(parkId: Int, id: Int): [Trail!]! @join__field(graph: PARKS)
+  user(id: Int!): User! @join__field(graph: USERS)
+  users: [User!]! @join__field(graph: USERS)
+}
+
+type Trail
+  @join__type(graph: HIKES, key: "id")
+  @join__type(graph: PARKS, key: "id")
+{
+  id: ID!
+  name: String! @join__field(graph: PARKS)
+  park: Park! @join__field(graph: PARKS)
+  length: Float! @join__field(graph: PARKS)
+}
+
+type User
+  @join__type(graph: HIKES, key: "id")
+  @join__type(graph: USERS, key: "id")
+{
+  id: ID!
+  name: String! @join__field(graph: USERS)
+}

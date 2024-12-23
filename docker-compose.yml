@@ -1,0 +1,38 @@
+services:
+  user-service:
+    image: user-service:latest
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+  
+  park-service:
+    image: park-service:latest
+    ports:
+      - "5001:5000"
+    networks:
+      - app-network
+  
+  hike-service:
+    image: hike-service:latest
+    ports:
+      - "5002:5000"
+    networks:
+      - app-network
+  
+  gateway-service:
+    build: .
+    container_name: gateway-service
+    ports:
+      - "4000:4000"  # Map the container port to a host port
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - user-service
+      - park-service
+      - hike-service
+    networks:
+      - app-network
+
+networks:
+  app-network:
