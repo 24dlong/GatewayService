@@ -1,0 +1,49 @@
+name: Sync Supergraph
+
+on:
+    workflow_dispatch: {}
+
+jobs:
+    sync-supergraph:
+        name: Sync Supergraph
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Enable Corepack
+              run: corepack enable
+
+            - name: Set Node & Yarn Versions
+              uses: actions/setup-node@v4
+            
+            - name: NPM init
+              run: npm init
+            
+            - name: Install Apollo Dependencies
+              run: npm install apollo-server @apollo/gateway
+            
+            - name: Install Apollo Dependencies
+              run: npm install apollo-server @apollo/gateway
+            
+            - name: Refresh Supergraph File
+              run: rover supergraph compose --config ./supergraph-config.yaml > supergraph.graphql
+
+            - name: Configure Git
+              run: |
+                git config --global user.name "github-actions[bot]"
+                git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Commit and Push Changes
+              run: |
+                git add supergraph.graphql
+                if git diff --cached --quiet; then
+                echo "No changes to commit."
+                else
+                git commit -m "Update supergraph.graphql via GitHub Actions"
+                git push
+                fi
