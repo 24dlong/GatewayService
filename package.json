@@ -2,7 +2,7 @@
   "name": "GatewayService",
   "packageManager": "yarn@4.5.3",
   "dependencies": {
-    "@apollo/gateway": "^2.9.3",
+    "@apollo/gateway": "^2.10.1",
     "apollo-server": "^3.13.0",
     "graphql": "^16.10.0"
   },
